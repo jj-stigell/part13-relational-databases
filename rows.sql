@@ -1,2 +1,2 @@
-INSERT INTO notes (author, blog_url, title) VALUES ('John Doe', 'www.google.com', 'Top 10 search engines');
-INSERT INTO notes (author, blog_url, title) VALUES ('Jane Doe', 'www.yahoo.com', 'Top 10 not so popular search engines');
+INSERT INTO blogs (author, blog_url, title) VALUES ('John Doe', 'www.google.com', 'Top 10 search engines');
+INSERT INTO blogs (author, blog_url, title) VALUES ('Jane Doe', 'www.yahoo.com', 'Top 10 not so popular search engines');
