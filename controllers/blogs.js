@@ -56,14 +56,21 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-router.delete('/:id', async (req, res) => {
-  const blog = await Blog.findByPk(req.params.id)
-  if (blog) {
-    blog.destroy()
-    res.status(204).end()
-  } else {
-    res.status(404).end()
-  }
+router.delete('/:id', tokenExtractor, async (req, res, next) => {
+    try {
+      const user = await User.findByPk(req.decodedToken.id)
+      const blog = await Blog.findByPk(req.params.id)
+      if (blog && user && blog.userId === user.id) {
+        blog.destroy()
+        res.status(204).end()
+      } else {
+        return res.status(401).json({
+          error: 'blog not found or you are not the owner of the blog'
+        })
+      }
+    } catch(error) {
+      next(error)
+    }
 })
 
 router.put('/:id', async (req, res, next) => {
