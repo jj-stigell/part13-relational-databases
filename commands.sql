@@ -5,3 +5,9 @@ CREATE TABLE blogs (
     title text NOT NULL,
     likes integer DEFAULT 0
 );
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name text NOT NULL,
+    username text NOT NULL
+);
