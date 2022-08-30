@@ -1,21 +1,46 @@
 const router = require("express").Router()
-const { Blog } = require('../models')
+const { Blog, User } = require('../models')
 const { isInt } = require('../util/helper')
+const { SECRET } = require('../util/config')
+const jwt = require('jsonwebtoken')
+
+const tokenExtractor = (req, res, next) => {
+  const authorization = req.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    try {
+      req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
+    } catch{
+      res.status(401).json({ error: 'token invalid' })
+    }
+  }  else {
+    res.status(401).json({ error: 'token missing' })
+  }
+  next()
+}
 
 router.get('/', async (req, res) => {
-  const blogs = await Blog.findAll()
+  const blogs = await Blog.findAll({
+    include: {
+      model: User,
+      attributes: ['username']
+    }
+  })
   res.json(blogs)
 })
 
-router.post('/', async (req, res, next) => {
-
+router.post('/', tokenExtractor, async (req, res, next) => {
   try {
+    const user = await User.findByPk(req.decodedToken.id)
     const newBlog = req.body;
     if (!newBlog.author || !newBlog.blogUrl || !newBlog.title) {
       throw new Error('Missing required values!')
     }
-    const blog = Blog.build({ author: newBlog.author.toString(), blogUrl: newBlog.blogUrl.toString(), title: newBlog.title.toString() })
-    blog.save()
+    const blog = await Blog.create({ 
+      author: newBlog.author.toString(),
+      blogUrl: newBlog.blogUrl.toString(),
+      title: newBlog.title.toString(),
+      userId: user.id
+    })
     res.json(blog)
   } catch(error) {
     next(error)
