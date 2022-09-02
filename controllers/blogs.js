@@ -47,14 +47,15 @@ router.post('/', tokenExtractor, async (req, res, next) => {
   try {
     const user = await User.findByPk(req.decodedToken.id)
     const newBlog = req.body;
-    if (!newBlog.author || !newBlog.blogUrl || !newBlog.title) {
+    if (!newBlog.author || !newBlog.blogUrl || !newBlog.title || !newBlog.year) {
       throw new Error('Missing required values!')
     }
     const blog = await Blog.create({ 
       author: newBlog.author.toString(),
       blogUrl: newBlog.blogUrl.toString(),
       title: newBlog.title.toString(),
-      userId: user.id
+      userId: user.id,
+      year: newBlog.year
     })
     res.json(blog)
   } catch(error) {

@@ -18,7 +18,7 @@ module.exports = {
         type: DataTypes.TEXT,
         allowNull: true
       },
-      blogUrl: {
+      blog_url: {
         type: DataTypes.TEXT,
         allowNull: false
       },
