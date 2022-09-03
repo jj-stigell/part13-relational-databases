@@ -35,8 +35,12 @@ router.put('/:username', async (req, res) => {
   }
 })
 
-
 router.get('/:id', async (req, res) => {
+  const where = {}
+  if (req.query.read) {
+    where.bookRead = req.query.read === "true"
+  }
+
   try {
     const user = await User.findByPk(req.params.id, {
       attributes: { exclude: [''] } ,
@@ -51,7 +55,8 @@ router.get('/:id', async (req, res) => {
           model: User,
           as: 'users_marked'
         }
-      }
+      },
+      where
     })
 
     if (user) {
