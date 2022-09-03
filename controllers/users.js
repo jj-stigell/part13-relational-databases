@@ -1,5 +1,5 @@
 const router = require("express").Router()
-const { User, Blog } = require('../models')
+const { User, Blog, ReadingList } = require('../models')
 
 router.get('/', async (req, res) => {
   const users = await User.findAll({
@@ -20,7 +20,7 @@ router.post('/', async (req, res, next) => {
   }
 })
 
-router.put('/:username', async (req, res, next) => {
+router.put('/:username', async (req, res) => {
   try {
     const user = await User.findOne({
       where: {
@@ -30,6 +30,31 @@ router.put('/:username', async (req, res, next) => {
     user.username = req.body.username
     user.save()
     res.json(user)
+  } catch(error) {
+    return res.status(400).json({ error })
+  }
+})
+
+
+router.get('/:id', async (req, res) => {
+  try {
+    const user = await User.findByPk(req.params.id, {
+      attributes: { exclude: [''] } ,
+      include: {
+        model: Blog,
+        as: 'readings',
+        attributes: { exclude: ['userId']},
+        through: {
+          attributes: []
+        }
+      },
+    })
+
+    if (user) {
+      res.json(user)
+    } else {
+      return res.status(404)
+    }
   } catch(error) {
     return res.status(400).json({ error })
   }
