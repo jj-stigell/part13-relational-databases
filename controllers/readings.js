@@ -1,6 +1,7 @@
 const router = require("express").Router()
 const { ReadingList, User } = require('../models')
 const { tokenExtractor } = require('../middlewares/tokenExtractor')
+const { tokenValidator } = require('../middlewares/tokenValidator')
 
 router.get('/', async (req, res) => {
   const readinglist = await ReadingList.findAll({
@@ -9,7 +10,7 @@ router.get('/', async (req, res) => {
   res.json(readinglist)
 })
 
-router.put('/:id', tokenExtractor, async (req, res, next) => {
+router.put('/:id', tokenExtractor, tokenValidator, async (req, res, next) => {
   try {
     const read = req.body.read;
     const user = await User.findByPk(req.decodedToken.id)

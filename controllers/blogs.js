@@ -3,6 +3,7 @@ const { Blog, User } = require('../models')
 const { isInt } = require('../util/helper')
 const { Op } = require("sequelize")
 const { tokenExtractor } = require('../middlewares/tokenExtractor')
+const { tokenValidator } = require('../middlewares/tokenValidator')
 
 router.get('/', async (req, res) => {
   let where = {}
@@ -28,7 +29,7 @@ router.get('/', async (req, res) => {
   res.json(blogs)
 })
 
-router.post('/', tokenExtractor, async (req, res, next) => {
+router.post('/', tokenExtractor, tokenValidator, async (req, res, next) => {
   try {
     const user = await User.findByPk(req.decodedToken.id)
     const newBlog = req.body;
@@ -57,7 +58,7 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-router.delete('/:id', tokenExtractor, async (req, res, next) => {
+router.delete('/:id', tokenExtractor, tokenValidator, async (req, res, next) => {
     try {
       const user = await User.findByPk(req.decodedToken.id)
       const blog = await Blog.findByPk(req.params.id)
