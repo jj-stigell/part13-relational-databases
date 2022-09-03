@@ -46,8 +46,12 @@ router.get('/:id', async (req, res) => {
         attributes: { exclude: ['userId']},
         through: {
           attributes: []
+        },
+        include: {
+          model: User,
+          as: 'users_marked'
         }
-      },
+      }
     })
 
     if (user) {
